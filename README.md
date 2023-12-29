@@ -1,6 +1,8 @@
 # YoutubeScraper
 A use case for collecting data via the youtube API and other webcrawling tools
 
+Note: you need a youtube Data API key in a separate file config.py that just contains: api_key = 'your API key here'
+
 ## Progress
 - current iteration has functionality to scrape video titles. Could be used for youtube title text analysis down the line or basic comp intel for any new online brands trying to emulate exisiting successful channels.
 
