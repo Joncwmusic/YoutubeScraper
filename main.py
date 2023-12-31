@@ -3,14 +3,15 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from io import BytesIO
-
+import re
 #### external files
 import config
 
-#### scraper libraries
+#### scraper and parser libraries
 import requests
 import bs4
 import selenium as sl
+import json
 
 #### api lib
 from googleapiclient.discovery import build
@@ -59,19 +60,54 @@ def get_channel_id(channel_name):
 def scrape_videos_with_bs(channel_url):
     response = requests.get(channel_url)
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
-    print(soup)
-    print(soup.select('.style-scope ytd-grid-video-renderer'))
+    pattern = re.compile(r'ytInitialData')
+    # title and thumbnail array init
     video_titles = []
     video_thumbnails = []
+    # print(soup.prettify())
+    # site_json = json.loads(soup.text)
+    # print(site_json)
+    # search for a script tag within html using BS4
+    script_tag = soup.find("script", string = pattern)
+    # print(script_tag.string)
+    # print(script_tag.string.index('ytInitialData = ') + 16)
+    json_text_from_channel = script_tag.string[script_tag.string.index('ytInitialData = ') + 16:len(script_tag.string)-1]
 
-    for item in soup.select('.style-scope ytd-grid-video-renderer'):
-        title = item.find('a', {'id': 'video-title'}).text.strip()
-        thumbnail_anchor = item.find('a', {'id': 'thumbnail'})
-        thumbnail_url = thumbnail_anchor.find('img').get('src')
-        video_titles.append(title)
-        video_thumbnails.append(get_thumbnail(thumbnail_url))
-        print(video_titles)
-        print(video_thumbnails)
+
+    if json_text_from_channel:
+        # Extract the text content of the script tag
+        script_content = script_tag
+
+        # Parse the JSON data
+        json_data_from_channel = json.loads(json_text_from_channel)
+        # Navigate through the JSON structure to get the thumbnails
+        # iterate over the index on contents
+        print(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'])
+        print(len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content'][
+                  'richGridRenderer']['contents']))
+        thumbnails = [json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
+                          'tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'][
+                          i]['richItemRenderer']['content']['videoRenderer'][
+                          'thumbnail']['thumbnails'][3]['url'] for i in range(0, len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents']))]
+
+        print(thumbnails)
+
+        for item in thumbnails:
+            title = json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
+                'tabs'][1]['tabRenderer']['content']['richGridRenderer'][
+                'contents'][0]['richItemRenderer']['content'][
+                'videoRenderer']['title']['runs'][0]['text']
+
+            video_titles.append(title)
+            video_thumbnails.append(get_thumbnail(thumbnail_url))
+    # for item in soup.select('.style-scope ytd-grid-video-renderer'):
+    #     title = item.find('a', {'id': 'video-title'}).text.strip()
+    #     thumbnail_anchor = item.find('a', {'id': 'thumbnail'})
+    #     thumbnail_url = thumbnail_anchor.find('img').get('src')
+    #     video_titles.append(title)
+    #     video_thumbnails.append(get_thumbnail(thumbnail_url))
+    #     print(video_titles)
+    #     print(video_thumbnails)
 
     return video_titles, video_thumbnails
 
