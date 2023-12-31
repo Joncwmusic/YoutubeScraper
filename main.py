@@ -85,29 +85,18 @@ def scrape_videos_with_bs(channel_url):
         print(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'])
         print(len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content'][
                   'richGridRenderer']['contents']))
-        thumbnails = [json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
+        video_thumbnails = [json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
                           'tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'][
                           i]['richItemRenderer']['content']['videoRenderer'][
-                          'thumbnail']['thumbnails'][3]['url'] for i in range(0, len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents']))]
+                          'thumbnail']['thumbnails'][3]['url'] for i in range(0, len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'])-1)]
 
-        print(thumbnails)
+        video_titles = [json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
+                          'tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'][i]['richItemRenderer']['content'][
+                'videoRenderer']['title']['runs'][0]['text'] for i in range(0, len(json_data_from_channel['contents']['twoColumnBrowseResultsRenderer']['tabs'][1]['tabRenderer']['content']['richGridRenderer']['contents'])-1)]
 
-        for item in thumbnails:
-            title = json_data_from_channel['contents']['twoColumnBrowseResultsRenderer'][
-                'tabs'][1]['tabRenderer']['content']['richGridRenderer'][
-                'contents'][0]['richItemRenderer']['content'][
-                'videoRenderer']['title']['runs'][0]['text']
 
-            video_titles.append(title)
-            video_thumbnails.append(get_thumbnail(thumbnail_url))
-    # for item in soup.select('.style-scope ytd-grid-video-renderer'):
-    #     title = item.find('a', {'id': 'video-title'}).text.strip()
-    #     thumbnail_anchor = item.find('a', {'id': 'thumbnail'})
-    #     thumbnail_url = thumbnail_anchor.find('img').get('src')
-    #     video_titles.append(title)
-    #     video_thumbnails.append(get_thumbnail(thumbnail_url))
-    #     print(video_titles)
-    #     print(video_thumbnails)
+            # video_titles.append(title)
+            # video_thumbnails.append(get_thumbnail(item))
 
     return video_titles, video_thumbnails
 
