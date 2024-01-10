@@ -10,4 +10,5 @@ Note: you need a youtube Data API key in a separate file config.py that just con
 
 
 - Now there's tabs in the tkinter window to show which source is getting whichever data. Moreover navigated json youtube channel metadata to get thumbnail URLs which will be displayed in the thumbnails tab when integrated into the tkinter application:
-  ![image](https://github.com/Joncwmusic/YoutubeScraper/assets/64911952/904b1673-1f07-47b8-b60b-13066d6237e7)
+  
+![image](https://github.com/Joncwmusic/YoutubeScraper/assets/64911952/904b1673-1f07-47b8-b60b-13066d6237e7)
